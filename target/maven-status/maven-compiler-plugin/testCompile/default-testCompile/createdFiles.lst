@@ -1,0 +1,5 @@
+DAO\CartDAOTest.class
+DAO\OrderDetailsDAOTest.class
+DAO\ReceiptDAOTest.class
+DAO\MenuDAOTest.class
+DAO\OrderDAOTest.class
