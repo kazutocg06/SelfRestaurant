@@ -27,9 +27,9 @@ public class Menu extends javax.swing.JFrame {
 
         initComponents();
 
-        this.setSize(1200, 680); //kích thước cứng cho cửa sổ Kiosk
-        this.setResizable(false); // Khóa không cho tự co giãn
-        this.setLocationRelativeTo(null); // Hiển thị ở chính giữa màn hình
+        this.setSize(1200, 680);
+        this.setResizable(false);
+        this.setLocationRelativeTo(null);
 
         this.getContentPane().setBackground(new java.awt.Color(255, 102, 51));
         jPanelDynamic.setOpaque(false);
@@ -39,50 +39,29 @@ public class Menu extends javax.swing.JFrame {
         jButtonMenu.setBorderPainted(false);
         jButtonMenu.setFocusPainted(false);
 
-        // ==========================================================
-        // 1. CẤU HÌNH CARDLAYOUT CHO CÁC TIÊU ĐỀ
-        // ==========================================================
         jPanelDynamic.add(createTitlePanel("Giỏ hàng của bạn"), "cartCard");
         jPanelDynamic.add(createTitlePanel("Đơn hàng đang xử lý"), "orderCard");
         jPanelDynamic.add(createTitlePanel("Lịch sử hóa đơn"), "receiptCard");
 
-        // ==========================================================
-        // 2. CẤU HÌNH DANH SÁCH MÓN ĂN (Chống xé hình)
-        // ==========================================================
         jScrollPane1.getViewport().setOpaque(true);
         jScrollPane1.getViewport().setBackground(new Color(235, 238, 240));
         jScrollPane1.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
         jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
-        // Ẩn vĩnh viễn thanh cuộn dọc và ngang của Giỏ hàng (Cho đồng bộ giao diện Kiosk)
         jScrollPaneCart.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
         jScrollPaneCart.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
-        // ==========================================================
-        // 3. LẮP RÁP THẺ "TÓM TẮT ĐƠN HÀNG" VÀO KHUNG jPanelOrderSummary
-        // ==========================================================
-        // Xóa sạch nền xám và đồ cũ của khung kéo thả
         jPanelOrderSummary.setOpaque(false);
         jPanelOrderSummary.setLayout(new BorderLayout());
         jPanelOrderSummary.removeAll();
 
-        // Lấy thẻ chúng ta đã thiết kế ra
         View.CardOrderSummary orderSummaryCard = new View.CardOrderSummary();
 
-        // Bọc vào Wrapper để ép nó lên trên cùng, tránh bị dãn ra giữa màn hình
         jPanelOrderSummary.add(orderSummaryCard, BorderLayout.CENTER);
 
-        // Tăng lề phải lên 60px để bảng Summary lùi vào trong, không dính sát mép phải
-        // ==========================================================
-        // 4. KHỞI TẠO LƯỚI GIỎ HÀNG
-        // ==========================================================
         JPanel jPanelCartGrid = new JPanel();
         jScrollPaneCart.setViewportView(jPanelCartGrid);
 
-        // ==========================================================
-        // 5. KHỞI TẠO CONTROLLER VÀ ĐỔ DỮ LIỆU
-        // ==========================================================
-        // Truyền lưới và 4 cái nhãn từ thẻ tóm tắt vào Controller
         cartItemController = new Controller.CartItemController(
                 jPanelCartGrid,
                 jPanelOrder,

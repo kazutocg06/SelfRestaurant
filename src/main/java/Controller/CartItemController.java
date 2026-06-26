@@ -50,11 +50,8 @@ public class CartItemController {
         this.lblGrandTotal = lblGrandTotal; 
         
         if (this.jPanelCartGrid != null) {
-            // LỚP NGOÀI CÙNG: Cho phép thẻ trắng giãn nở tùy ý theo không gian
             this.jPanelCartGrid.setLayout(new BorderLayout());
             this.jPanelCartGrid.setOpaque(false);
-            
-            // LỚP 2: Tấm nền màu trắng bọc toàn bộ
             this.innerCartPanel = new JPanel() {
                 @Override
                 public Dimension getPreferredSize() {
@@ -79,9 +76,7 @@ public class CartItemController {
                 }
             };
             this.innerCartPanel.setOpaque(false);
-            this.innerCartPanel.setLayout(new BorderLayout()); // Rất quan trọng để dàn trang nội dung
-            
-            // Ép tấm nền trắng vào CENTER để nó bung to hết cỡ lấp đầy màn hình!
+            this.innerCartPanel.setLayout(new BorderLayout()); 
             this.jPanelCartGrid.add(this.innerCartPanel, BorderLayout.CENTER);
         }
         
@@ -133,15 +128,12 @@ public class CartItemController {
             lblEmpty.setForeground(new Color(180, 180, 180));
             lblEmpty.setHorizontalAlignment(SwingConstants.CENTER);
             
-            innerCartPanel.add(lblEmpty, BorderLayout.CENTER); // Căn giữa
+            innerCartPanel.add(lblEmpty, BorderLayout.CENTER);
             
         } else {
-            // LỚP 3: Cột danh sách món ăn thực tế
             JPanel listPanel = new JPanel();
             listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
-            listPanel.setOpaque(false);
-            
-            // LỚP 4: Panel Vùng An Toàn bảo vệ đáy khỏi JScrollPane
+            listPanel.setOpaque(false);        
             JPanel safeAreaPanel = new JPanel(new BorderLayout());
             safeAreaPanel.setOpaque(false);
             safeAreaPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(20, 15, 60, 15));
@@ -151,8 +143,6 @@ public class CartItemController {
                 totalQuantity += item.getQuantity();   
                 
                 CardCartItem card = new CardCartItem(item, this);
-                
-                // Bọc thẻ vào một panel ngang để giữ nguyên kích thước 700x135, không bị giãn vỡ
                 JPanel rowWrapper = new JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 0, 0));
                 rowWrapper.setOpaque(false);
                 rowWrapper.add(card);
@@ -160,19 +150,13 @@ public class CartItemController {
                 listPanel.add(rowWrapper);
                 listPanel.add(Box.createVerticalStrut(15)); 
             }
-            
-            // Đẩy danh sách món ăn lên sát trần của Vùng an toàn
-            safeAreaPanel.add(listPanel, BorderLayout.NORTH); 
-            
-            // Đẩy tiếp Vùng an toàn lên sát trần của Khung trắng (Phần dưới cùng của khung trắng cứ thế trống và mang màu trắng nguyên bản)
+            safeAreaPanel.add(listPanel, BorderLayout.NORTH);           
             innerCartPanel.add(safeAreaPanel, BorderLayout.NORTH);
         }
         
         if (lblTotalUniqueItems != null) lblTotalUniqueItems.setText(String.valueOf(totalUniqueItems));
         if (lblTotalQuantity != null) lblTotalQuantity.setText(String.valueOf(totalQuantity));
-        if (lblGrandTotal != null) lblGrandTotal.setText(String.format("%,.0f VNĐ", grandTotal));
-        
-        // Cập nhật lại giao diện
+        if (lblGrandTotal != null) lblGrandTotal.setText(String.format("%,.0f VNĐ", grandTotal));      
         jPanelCartGrid.revalidate();
         jPanelCartGrid.repaint();
         

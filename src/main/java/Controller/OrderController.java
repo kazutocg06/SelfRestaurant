@@ -82,27 +82,15 @@ public class OrderController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        // ==========================================================
-        // DUYỆT BỘ NHỚ RAM ĐỂ VẼ GIAO DIỆN LÊN MÀN HÌNH
-        // ==========================================================
         for (String orderId : orderDataMap.keySet()) {
             Object[] info = orderDataMap.get(orderId);
             List<OrderDetails> items = orderItemsMap.get(orderId);
-            
-            // Ép kiểu dữ liệu lấy từ Map ra
-            String timeStr = (String) info[0];
+                        String timeStr = (String) info[0];
             double total = (Double) info[1];
             String status = (String) info[2];
-
-            // Truyền 'this' để thẻ có thể tự Load lại lưới khi bấm Hủy đơn
             CardOrder card = new CardOrder(orderId, timeStr, items, total, status, this);
             gridPanel.add(card);
         }
-
-        // ==========================================================
-        // XỬ LÝ THANH CUỘN VÀ TRƯỜNG HỢP TRỐNG
-        // ==========================================================
        if (gridPanel.getComponentCount() == 0) {
             JLabel lblEmpty = new JLabel("Chưa có đơn hàng nào hôm nay", SwingConstants.CENTER);
             lblEmpty.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 18));
@@ -110,27 +98,19 @@ public class OrderController {
             jPanelOrder.add(lblEmpty, BorderLayout.CENTER);
             
         } else {
-            // CHIẾN THUẬT: TẠO MỘT CÁI KHUNG BỌC (WRAPPER) ĐỂ NEO LƯỚI LÊN TRÊN CÙNG
             JPanel wrapperPanel = new JPanel(new BorderLayout());
             wrapperPanel.setOpaque(false);
-            
-            // Nhét gridPanel vào phía Bắc (NORTH) của khung bọc. 
-            // Việc này ép cái lưới phải dính sát lên trên cùng, không được chảy xệ xuống dưới.
             wrapperPanel.add(gridPanel, BorderLayout.NORTH); 
-
-            // Bỏ cái khung bọc (wrapperPanel) vào thanh cuộn thay vì bỏ trực tiếp gridPanel
             JScrollPane scrollMain = new JScrollPane(wrapperPanel); 
             
             scrollMain.setOpaque(false);
             scrollMain.getViewport().setOpaque(false);
-            scrollMain.setBorder(BorderFactory.createEmptyBorder()); // Trị viền xám
+            scrollMain.setBorder(BorderFactory.createEmptyBorder()); 
             scrollMain.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
-            scrollMain.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-            
+            scrollMain.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);          
             Controller.KineticScroller.setup(scrollMain);
             jPanelOrder.add(scrollMain, BorderLayout.CENTER);
         }
-
         jPanelOrder.revalidate();
         jPanelOrder.repaint();
     }

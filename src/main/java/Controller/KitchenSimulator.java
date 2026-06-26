@@ -12,12 +12,11 @@ public class KitchenSimulator {
     private static KitchenSimulator instance;
     private Map<String, Long> transitionTimes = new HashMap<>();
     private Random rand = new Random();
-    private OrderController currentController; // Lưu controller để ra lệnh refresh màn hình
+    private OrderController currentController; 
     private boolean isRunning = false;
 
     private KitchenSimulator() {}
 
-    // Dùng Singleton để đảm bảo chỉ có duy nhất 1 "Nhà bếp" hoạt động
     public static KitchenSimulator getInstance() {
         if (instance == null) {
             instance = new KitchenSimulator();
@@ -36,10 +35,9 @@ public class KitchenSimulator {
         Thread thread = new Thread(() -> {
             while (true) {
                 try {
-                    Thread.sleep(2000); // Quét Database mỗi 2 giây
+                    Thread.sleep(2000); 
                     boolean uiNeedsRefresh = simulateCooking();
                     
-                    // Nếu có món nấu xong và đang mở tab Đơn hàng -> Cập nhật UI
                     if (uiNeedsRefresh && currentController != null) {
                         javax.swing.SwingUtilities.invokeLater(() -> {
                             currentController.loadOrdersToUI();
@@ -50,18 +48,14 @@ public class KitchenSimulator {
                 }
             }
         });
-        thread.setDaemon(true); // Thread tự động chết khi tắt phần mềm
+        thread.setDaemon(true);
         thread.start();
     }
 
-    // ==========================================================
-    // GIỮ NGUYÊN 100% HÀM SIMULATE COOKING THEO YÊU CẦU CỦA BẠN
-    // ==========================================================
     private boolean simulateCooking() {
         boolean updated = false;
         long currentTime = System.currentTimeMillis();
 
-        // Chỉ quét các món đang Pending/Cooking của những đơn chưa bị Hủy trong ngày hôm nay
         String sqlGetItems = "SELECT od.orderdetail_id, od.order_id, od.item_status " +
                              "FROM OrderDetails od " +
                              "JOIN Orders o ON od.order_id = o.order_id " +
@@ -79,17 +73,14 @@ public class KitchenSimulator {
                 String status = rs.getString("item_status").trim();
 
                 if (!transitionTimes.containsKey(detailId)) {
-                    // Nếu món mới vào, bấm giờ random từ 10s đến 15s (10000ms - 15000ms)
                     long delay = 15000 + rand.nextInt(10000); 
                     transitionTimes.put(detailId, currentTime + delay);
                 } else {
-                    // Nếu thời gian đếm ngược đã kết thúc
                     if (currentTime >= transitionTimes.get(detailId)) {
-                        // Pending -> Cooking, Cooking -> Finish
                         String newStatus = status.equalsIgnoreCase("Pending") ? "Cooking" : "Finish";
                         updateItemStatusDB(detailId, newStatus);
-                        transitionTimes.remove(detailId); // Xóa để bấm giờ cho Phase tiếp theo
-                        checkAndUpdateOrderStatus(orderId); // Cập nhật lại trạng thái cha
+                        transitionTimes.remove(detailId);
+                        checkAndUpdateOrderStatus(orderId);
                         updated = true;
                     }
                 }
@@ -111,9 +102,6 @@ public class KitchenSimulator {
             e.printStackTrace();}
     }
 
-    // ==========================================================
-    // CHỈNH SỬA LẠI LOGIC CHỐT TRẠNG THÁI & HIỂN THỊ THÔNG BÁO
-    // ==========================================================
     private void checkAndUpdateOrderStatus(String orderId) {
         String sql = "SELECT item_status FROM OrderDetails WHERE order_id = ?";
         
@@ -141,14 +129,13 @@ public class KitchenSimulator {
                     }
                 }
             }
-            if (validItems == 0) return; // Mọi món đều bị hủy lẻ
+            if (validItems == 0) return;
 
-            // LOGIC NGHIỆP VỤ MỚI: Tính toán trạng thái tổng chuẩn xác nhất
             String newOrderStatus = null;
             if (!hasPending && !hasCooking && hasFinish) {
-                newOrderStatus = "Finish"; // 100% các món đã nấu xong
+                newOrderStatus = "Finish";
             } else if (hasCooking || (hasPending && hasFinish)) {
-                newOrderStatus = "Cooking"; // Có món đang nấu, HOẶC nấu xong một nửa nhưng vẫn còn món đang đợi
+                newOrderStatus = "Cooking";
             }
 
             if (newOrderStatus != null) {
@@ -160,11 +147,9 @@ public class KitchenSimulator {
                     
                     int rowsUpdated = updatePs.executeUpdate();
                     
-                    // CHỈ GỌI BIÊN LAI VÀ THÔNG BÁO KHI ĐƠN THỰC SỰ ĐƯỢC CHỐT SANG FINISH THÀNH CÔNG
                     if (rowsUpdated > 0 && newOrderStatus.equalsIgnoreCase("Finish")) {
                         new DAO.ReceiptDAO().insertReceiptFromOrder(orderId);
                         
-                        // HIỂN THỊ THÔNG BÁO TOAST TRƯỢT XUỐNG
                         javax.swing.SwingUtilities.invokeLater(() -> {
                             javax.swing.JFrame mainFrame = null;
                             for (java.awt.Window window : java.awt.Window.getWindows()) {

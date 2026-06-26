@@ -56,10 +56,6 @@ public class MenuController {
 
     private void renderToView(List<Item> list) {
         jPanelFoodList.removeAll(); 
-        
-        // ==========================================================
-        // THAY ĐỔI LAYOUT CỦA PANEL GỐC THÀNH BORDER_LAYOUT
-        // ==========================================================
         jPanelFoodList.setLayout(new BorderLayout());
         jPanelFoodList.setOpaque(false);
         
@@ -70,24 +66,15 @@ public class MenuController {
             lblEmpty.setHorizontalAlignment(SwingConstants.CENTER);
             jPanelFoodList.add(lblEmpty, BorderLayout.CENTER);
         } else {
-            // ==========================================================
-            // TẠO MỘT LỚP BỌC (WRAPPER) ĐỂ BẢO VỆ KÍCH THƯỚC CỦA THẺ
-            // ==========================================================
             JPanel gridPanel = new JPanel(new GridLayout(0, 4, 20, 20));
             gridPanel.setOpaque(false);
-            
-            // Padding lùi vào 20px ở cả 4 viền để thẻ không đâm vào vách
             gridPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(20, 20, 20, 20));
             
             for (Item item : list) {
                 gridPanel.add(new CardFood(item, cartItemController)); 
-            }
-            
-            // TUYỆT CHIÊU: Gắn lưới vào NÓC (NORTH) của khu vực chứa. 
-            // Hành động này triệt tiêu hoàn toàn sự bóp méo của ScrollPane!
+            }            
             jPanelFoodList.add(gridPanel, BorderLayout.NORTH);
         }
-        
         jPanelFoodList.revalidate();
         jPanelFoodList.repaint();
     }

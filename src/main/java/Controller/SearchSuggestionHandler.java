@@ -35,7 +35,7 @@ public class SearchSuggestionHandler {
     private JPopupMenu searchPopup;
     private JPanel searchContainer;
     private Timer liveSearchTimer;
-    private List<Item> lastResults; // Lưu lại kết quả tìm kiếm mới nhất
+    private List<Item> lastResults;
 
     public SearchSuggestionHandler(JTextField txtSearch, MenuController menuController) {
         this.txtSearch = txtSearch;
@@ -59,9 +59,7 @@ public class SearchSuggestionHandler {
         JScrollPane searchScroll = new JScrollPane(searchContainer);
         searchScroll.setBorder(null);
         searchScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        searchScroll.getVerticalScrollBar().setPreferredSize(new Dimension(0, 0));
-        
-        // Kích hoạt vuốt mượt cho danh sách gợi ý tìm kiếm
+        searchScroll.getVerticalScrollBar().setPreferredSize(new Dimension(0, 0));      
         Controller.KineticScroller.setup(searchScroll);
 
         searchPopup.add(searchScroll);
@@ -92,10 +90,6 @@ public class SearchSuggestionHandler {
             }
         }, AWTEvent.MOUSE_WHEEL_EVENT_MASK);
     }
-
-    // ==========================================================
-    // HÀM 1 CƠ SỞ: QUÉT DATABASE VÀ DỰNG GRID GỢI Ý MÓN ĂN
-    // ==========================================================
     private void performSearch() {
         String kw = txtSearch.getText().trim();
         
@@ -136,7 +130,6 @@ public class SearchSuggestionHandler {
                         int targetH = getHeight();
 
                         if (imgOriginal != null && imgOriginal.getWidth(null) > 0) {
-                            // THUẬT TOÁN ALHPA-COMPOSITE: Cấm tuyệt đối ảnh tràn, bảo vệ ranh giới JPopupMenu
                             java.awt.image.BufferedImage maskImage = new java.awt.image.BufferedImage(targetW, targetH, java.awt.image.BufferedImage.TYPE_INT_ARGB);
                             Graphics2D g2d = maskImage.createGraphics();
                             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -172,24 +165,17 @@ public class SearchSuggestionHandler {
 
                 row.add(pnlImg, BorderLayout.WEST); 
                 row.add(lblName, BorderLayout.CENTER); 
-                
-                // Hiệu ứng click chọn nhanh món ăn từ bảng gợi ý (Nếu bạn cần thêm)
                 row.addMouseListener(new java.awt.event.MouseAdapter() {
-                    private int startYOnScreen; // Lưu vị trí Y lúc bắt đầu chạm xuống
+                    private int startYOnScreen;
 
                     @Override
                     public void mousePressed(java.awt.event.MouseEvent e) {
-                        // Ghi lại tọa độ màn hình ngay khi ngón tay vừa chạm vào thẻ
                         startYOnScreen = e.getLocationOnScreen().y;
                     }
 
                     @Override
                     public void mouseReleased(java.awt.event.MouseEvent e) {
-                        // Tính toán khoảng cách ngón tay đã di chuyển/kéo rê trên màn hình
                         int deltaY = Math.abs(e.getLocationOnScreen().y - startYOnScreen);
-                        
-                        // TIÊU CHUẨN KIOSK: Nếu dịch chuyển quá 5 pixel -> Hệ thống xác định là VUỐT.
-                        // Chỉ thực hiện chọn món khi di chuyển ít hơn 5 pixel (tức là nhấp chạm tại chỗ).
                         if (deltaY < 5) {
                             if (e.getComponent().contains(e.getPoint())) {
                                 txtSearch.setText(item.getName());
@@ -207,21 +193,12 @@ public class SearchSuggestionHandler {
             searchContainer.repaint();
         }
     }
-    
-    // ==========================================================
-    // HÀM VÁ LỖI PHỤC VỤ BÀN PHÍM ẢO: Tiếp nhận từ khóa thủ công
-    // ==========================================================
     public void onChangeSearch(String text) {
         if (liveSearchTimer != null && liveSearchTimer.isRunning()) {
             liveSearchTimer.stop();
         }
-        // Gọi lệnh tìm kiếm đồng bộ ngay lập tức không thông qua bộ đếm trễ chuột
         performSearch(); 
     }
-
-    // ==========================================================
-    // HÀM VÁ LỖI PHỤC VỤ BÀN PHÍM ẢO: Ép hiển thị Popup lên màn hình
-    // ==========================================================
     public void showPopup() {
         if (lastResults != null && !lastResults.isEmpty() && !txtSearch.getText().trim().isEmpty()) {
             int itemHeight = 70; 

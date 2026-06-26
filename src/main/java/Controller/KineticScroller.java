@@ -12,14 +12,11 @@ import javax.swing.SwingUtilities;
 
 public class KineticScroller {
 
-    // Hàm public static để có thể gọi từ bất kỳ đâu mà không cần new đối tượng
     public static void setup(JScrollPane jScrollPane) {
         
-        // 1. TĂNG TỐC ĐỘ LĂN CHUỘT VÀ ẨN THANH TRƯỢT
         jScrollPane.getVerticalScrollBar().setUnitIncrement(40); 
         jScrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(0, 0));
         
-        // 2. THÊM TÍNH NĂNG VUỐT / KÉO THẢ ĐỂ CUỘN
         Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
             private Point startPt;
             private Point startViewPos;
@@ -29,12 +26,10 @@ public class KineticScroller {
                 if (event instanceof MouseEvent) {
                     MouseEvent me = (MouseEvent) event;
                     
-                    // Chỉ kích hoạt khi chuột nằm trong JScrollPane
                     if (!SwingUtilities.isDescendingFrom(me.getComponent(), jScrollPane)) {
                         return;
                     }
                     
-                    // Bỏ qua nếu đang bấm vào nút bấm (vd: Thêm vào giỏ)
                     if (me.getComponent() instanceof JButton) {
                         return;
                     }
@@ -47,7 +42,6 @@ public class KineticScroller {
                         if (startPt != null && startViewPos != null) {
                             Point currentPt = me.getLocationOnScreen();
                             
-                            // 2. NHÂN ĐÔI TỐC ĐỘ VUỐT CHẠM (Thêm * 2)
                             int deltaY = (startPt.y - currentPt.y) * (2); 
                             
                             Point newViewPos = new Point(startViewPos.x, startViewPos.y + deltaY);

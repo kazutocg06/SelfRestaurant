@@ -41,18 +41,12 @@ public class ReceiptController {
         JPanel gridReceipt = new JPanel(new GridLayout(0, 2, 20, 20));
         gridReceipt.setOpaque(false);
         gridReceipt.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-
-        // ==========================================================
-        // CHIẾN THUẬT 1 CÂU SQL: JOIN 2 BẢNG ĐỂ LẤY HẾT DỮ LIỆU TRONG 1 NỐT NHẠC
-        // ==========================================================
         String sql = "SELECT r.receipt_id, r.order_id, r.total_amount, r.status, o.created_at AS payment_date, "
                    + "od.item_id, od.item_name, od.quantity, od.price_at_order "
                    + "FROM Receipt r "
                    + "JOIN Orders o ON r.order_id = o.order_id "
                    + "LEFT JOIN OrderDetails od ON r.order_id = od.order_id "
                    + "ORDER BY o.created_at DESC";
-
-        // Dùng Map để nhóm các món ăn vào đúng Hóa đơn trên bộ nhớ RAM
         Map<String, Object[]> receiptDataMap = new LinkedHashMap<>();
         Map<String, List<CardReceipt.ReceiptItem>> receiptItemsMap = new LinkedHashMap<>();
 
@@ -62,8 +56,6 @@ public class ReceiptController {
 
             while (rs.next()) {
                 String rcId = rs.getString("receipt_id");
-
-                // Nếu là hóa đơn mới xuất hiện lần đầu trong vòng lặp, khởi tạo thông tin chung
                 if (!receiptDataMap.containsKey(rcId)) {
                     String ordId = rs.getString("order_id");
                     double total = rs.getDouble("total_amount");
@@ -75,11 +67,8 @@ public class ReceiptController {
                     receiptDataMap.put(rcId, new Object[]{ordId, timeStr, total, st});
                     receiptItemsMap.put(rcId, new ArrayList<>());
                 }
-
-                // Đọc thông tin món ăn và nhét trực tiếp vào danh sách trên RAM
                 String itemId = rs.getString("item_id");
                 if (itemId != null) {
-                    // Tạo đối tượng ReceiptItem từ kết quả JOIN
                     CardReceipt.ReceiptItem item = new CardReceipt.ReceiptItem(
                         rs.getString("item_name"),
                         rs.getInt("quantity"),
@@ -91,10 +80,6 @@ public class ReceiptController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        // ==========================================================
-        // DUYỆT RAM ĐỂ ĐỔ DỮ LIỆU LÊN GIAO DIỆN (KHÔNG CHẠY SQL TẠI ĐÂY)
-        // ==========================================================
         for (String rcId : receiptDataMap.keySet()) {
             Object[] info = receiptDataMap.get(rcId);
             List<CardReceipt.ReceiptItem> items = receiptItemsMap.get(rcId);
@@ -103,12 +88,8 @@ public class ReceiptController {
             String timeStr = (String) info[1];
             double total = (Double) info[2];
             String st = (String) info[3];
-
-            // Nạp thẻ vào lưới đồ họa
             gridReceipt.add(new CardReceipt(rcId, ordId, timeStr, items, total, st));
         }
-
-        // 4. Xử lý trường hợp trống hoặc hiển thị thanh cuộn
         if (gridReceipt.getComponentCount() == 0) {
             JLabel lblEmpty = new JLabel("Chưa có hóa đơn nào được xuất", SwingConstants.CENTER);
             lblEmpty.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 18));
@@ -131,8 +112,6 @@ public class ReceiptController {
             KineticScroller.setup(scrollReceipt);
             targetPanel.add(scrollReceipt, BorderLayout.CENTER);
         }
-
-        // 5. Làm mới lại giao diện
         targetPanel.revalidate();
         targetPanel.repaint();
     }
