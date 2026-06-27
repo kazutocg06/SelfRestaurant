@@ -77,11 +77,6 @@ public class CardCartItem extends JPanel {
                     g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
                     g2.drawImage(maskImage, 0, 0, null);
 
-                } else {
-                    g.setColor(new Color(230, 230, 230));
-                    g.fillRoundRect(0, 0, w, h, 12, 12);
-                    g.setColor(Color.GRAY);
-                    g.drawString("No Image", w/2 - 25, h/2 + 5);
                 }
             }
         };
