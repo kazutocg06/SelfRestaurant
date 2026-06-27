@@ -187,7 +187,7 @@ public class CartItemController {
         String newOrderId = orderDAO.placeOrder(currentCartId, grandTotal);
 
         if (newOrderId != null) {
-            javax.swing.JOptionPane.showMessageDialog(null, "" + newOrderId);
+            javax.swing.JOptionPane.showMessageDialog(null, "Đặt hàng thành công! Mã đơn:" + newOrderId);
             
             if (this.jPanelOrder != null) {
                 OrderController orderController = new OrderController(this.jPanelOrder);
